@@ -104,6 +104,8 @@ or you can create a brand new project with cookiecutter and use this demo packag
    Service functions have decorators which refer to the route name.
    Route names must be mapped to route URLs in routes.py.
 
+   Example service description file (OpenAPI Specification) is static/openapi.yaml.
+   
 #. Write client code. The demo project contains demo client code in client.py.
 
 #. Install:
@@ -142,6 +144,12 @@ or you can create a brand new project with cookiecutter and use this demo packag
 
       pserve --reload development.ini
 
+   Service description file is served at the following URL:
+
+   .. code-block:: bash
+
+      http://SERVER:6543/static/openapi.yaml
+      
    For running client, open another terminal window,  activate the sandbox environment:
 
    .. code-block:: bash          

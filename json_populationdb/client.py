@@ -53,6 +53,8 @@ class JsonClient:
         return requests.put(url, json=data, **args)
 
 def show_response(response):
+    status = response.status_code
+    print(f'Response status: {status}')
     try:
         json_data = response.json()
     except:

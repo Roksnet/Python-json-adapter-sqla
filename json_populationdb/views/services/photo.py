@@ -10,34 +10,32 @@ log = logging.getLogger(__name__)
 @view_config(route_name='photo', renderer='json', request_method='PUT')
 def put_photo(request):
     error = None
-    personcode = request.matchdict.get('code')
-    body = request.json_body
-    if not body:    
-        error = 'Body is missing or not JSON'
-    elif not personcode:
-        error = 'Person code missing'
-    else:
-        q = request.dbsession.query(Person)
-        q = q.filter(Person.personcode==personcode)
-
-        if q.count() == 0:
-            error = 'Person not found.'
+    errstatus = 400
+    try:
+        personcode = request.matchdict.get('code')
+        body = request.json_body
+        if not personcode:
+            error = 'Person code missing'
         else:
-            imgdata = body.get('photo')
-            if not imgdata:
-                error = 'Photo missing'
+            q = request.dbsession.query(Person)
+            q = q.filter(Person.personcode==personcode)
+            p = q.first()
+            if not p:
+                error = 'Person not found'
+                errstatus = 404
             else:
-                img = base64.b64decode(imgdata)
-                p = q.first()
-                p.photo = img
+                imgdata = body.get('photo')
+                if not imgdata:
+                    error = 'Photo missing'
+                else:
+                    img = base64.b64decode(imgdata)
+                    p.photo = img
+                    res = {'message': 'Photo updated successfully'}
+                    return res
+    except Exception as ex:
+        log.error(ex)
+        error = 'error occurred'
 
-    if error:
-        message = error
-        rc = 0
-    else:
-        rc = 1
-        message = 'File saved successfully'
+    res = {'error': error}
+    return Response(json.dumps(res), status=errstatus)
 
-    return {'rc': rc,
-            'message': message
-            }
