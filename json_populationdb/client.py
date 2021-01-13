@@ -19,7 +19,7 @@ class JsonClient:
                    'X-Road-Client': self.xroad_client,
                    }
         if self.userid:
-            headers['X-Road-Userid'] = self.userid
+            headers['X-Road-UserId'] = self.userid
         if self.issue:
             headers['X-Road-Issue'] = self.issue
         timeout = (5,20)

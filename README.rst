@@ -5,13 +5,15 @@ json_populationdb
 How to develop X-road services 
 ------------------------------
 
-This is tutorial on how to develop your own X-road services with Python and JSON (REST).
+This is tutorial on how to develop your own X-road services with Python and JSON using X-road REST interface.
+More basic REST example can be found at https://github.com/Roksnet/Python-json-adapter-hello .
+
 For real life scenario, you need access to your information system’s database.
 Data handling is based on SQLAlchemy library which can be used with any popular RDBMS,
 including SQLite, Postgresql, MySQL, Oracle, MS-SQL etc.
 If you do not have access to the database, you can still follow this tutorial using local SQLite database.
 
-Python 3 is required. As operation system you can use any modern Linux distribution. 
+Python 3 is required. As operation system you can use any modern Linux distribution, for example Ubuntu.
 
 For development environment you can also use Microsoft Windows. For installing Python in Windows,
 we recommend to install Cygwin (http://cygwin.com/setup-x86_64.exe) and select Python 3 among
@@ -29,10 +31,14 @@ Activate the sandbox environment for your terminal:
                 
    . /srv/python-json-demo/bin/activate
 
-You can clone this example package (and modify it’s contents if you like),
+Most of files here are intended to develop the server side (to provide X-road services).
+If your objective is to use X-road services provided by other systems and you need to develop client only,
+then see client.py.
+
+For providing services you can either clone this example package (and modify it’s contents if you like),
 or you can create a brand new project with cookiecutter and use this demo package as source for example files.
 
-#. If you like to create a brand new project, you need to install cookiecutter:
+#. If you like to create a new project, you need to install cookiecutter:
 
    .. code-block:: bash    
 
@@ -73,9 +79,9 @@ or you can create a brand new project with cookiecutter and use this demo packag
       sqlalchemy.url = mysql://username:password@host/dbname
  
 #. For database access we are using SQLAlchemy. SQLAlchemy comes with two options
-   to query and modify data: either object relational mapping (ORM) or plain SQL.
+   to query and modify data: either object-relational mapper (ORM) or plain SQL.
 
-   1) For more convenient user experience we recommend using ORM. 
+   1) For complicated business and query logic it is recommended to use ORM.
       For each database table you have to describe corresponding Python class.
       ORM classes belong to the models subdirectory.
       The cookiecutter has generated a demo model in models/mymodel.py.
@@ -90,7 +96,7 @@ or you can create a brand new project with cookiecutter and use this demo packag
 
    2) If you are in hurry then you can omit creating ORM classes and use plain SQL instead.
       If you are not using an existing database then you must create the database manually.
-      (If using ORM, database may be initialized automatically.)
+      (If using ORM, database can be initialized automatically, generated from ORM classes.)
       
 #. If you created a new project with cookiecutter and created your own data model then
    it would be nice if you would exclude original MyModel from files view/default.py and tests.py.
@@ -104,9 +110,18 @@ or you can create a brand new project with cookiecutter and use this demo packag
    Service functions have decorators which refer to the route name.
    Route names must be mapped to route URLs in routes.py.
 
-   Example service description file (OpenAPI Specification) is static/openapi.yaml.
+#. Create service description file (OpenAPI Specification).
+   Example service description file is static/openapi.yaml.
+   Technically, the service description file is not required for running the server,
+   but it is useful for programmers (and code generators)
+   who will develop clients that are using your services
+   and need to know the structure of service input and output messages.
    
 #. Write client code. The demo project contains demo client code in client.py.
+   To develop client of a service of some other service provider, you need to know
+   the input and output parameters of the service.
+   For this purpose you need to investigate service description file or example messages
+   provided by service provider.
 
 #. Install:
 
@@ -115,7 +130,8 @@ or you can create a brand new project with cookiecutter and use this demo packag
       python setup.py develop
 
 #. In case your are not working with an existing database, the database needs to be initialized.
-   Omit this step if you will connect to an existing database!
+   We are using Alembic. Alembic is a tool that automates upgrades of your data model at the database.
+   Omit this step if you are connecting to an existing database or if your data model is managed somewhere else.
 
    To initialize and upgrade the database using Alembic, create first revision of data structure
    according to your data model (omit this command if you did not modify data model files):
