@@ -195,7 +195,6 @@ or you can create a brand new project with cookiecutter and use this demo packag
    Add access rights to your service consumer.
    
    Open tab ENDPOINTS. You should see here all endpoints you have described in the description file.
-   Grant your service consumer subsystem access rights for each endpoint.
 
    Close service form and enable the web service (click on the right of the URL).
    
