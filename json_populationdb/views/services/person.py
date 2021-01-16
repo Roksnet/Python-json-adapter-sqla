@@ -4,7 +4,6 @@ from pyramid.view import view_config
 from pyramid.response import Response
 from ...models import Person
 import sqlalchemy
-import json
 import logging
 log = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ def list_persons(request):
     "Service for searching persons"
     # input: search criteria (givenname, surname, code)
     # output: list of persons matching search criteria
-    errstatus = 400 # bad request
+    status_code = 400 # bad request
     error = None
     try:
         params = request.params
@@ -28,7 +27,7 @@ def list_persons(request):
             error = 'Invalid max_results'
 
         if not error:
-            errstatus = 500 # internal server error
+            status_code = 500 # internal server error
             
             # Option 1: query using SQLAlchemy object relational mapping (ORM)
             #error, items = _query_persons_orm(request, givenname, surname, personcode, max_results)
@@ -44,8 +43,9 @@ def list_persons(request):
         log.error(ex)
         error = 'error occurred'
         
+    request.response.status_code = status_code
     res = {'error': error}
-    return Response(json.dumps(res), status=errstatus)
+    return res
 
 def _query_persons_orm(request, givenname, surname, personcode, max_results):
     "Persons query using SQLAlchemy ORM"
@@ -105,13 +105,13 @@ def get_person(request):
     "Service for detail data about a person"
 
     error = None
-    errstatus = 400
+    status_code = 400
     try:
         personcode = request.matchdict.get('code')
         if not personcode:
             error = 'Code is missing'
         else:
-            errstatus = 500
+            status_code = 500
             q = request.dbsession.query(Person)
             q = q.filter(Person.personcode==personcode)
             p = q.first()
@@ -129,10 +129,11 @@ def get_person(request):
                 return item
             else:
                 error = 'Person not found'
-                errstatus = 404
+                status_code = 404
     except Exception as ex:
         log.error(ex)
         error = 'error occurred'
+    request.response.status_code = status_code
     res = {'error': error}
-    return Response(json.dumps(res), status=errstatus)
+    return res
 
