@@ -179,11 +179,25 @@ or you can create a brand new project with cookiecutter and use this demo packag
       python -m json_populationdb.client
    
 #. If you see that services are working fine, you can continue setting services up in your security server.
-   In the security server you need to configure service provider URL as:
 
-   .. code-block:: bash
+   Open browser at user interface URL of your security server (port 4000).
+   We assume that you have the information system already certified.
+   Navigate to services page and press ADD REST.
+   Modal window appears, insert following values:
 
-       http://SERVER:6543/services
+   * URL Type: OpenAPI 3 Description
+   * URL: http://SERVER:6543/static/openapi.yaml
+   * Service Code: persondata
+
+   Save and you see the URL. Click on the service code. You see Service URL field filled with root URI of your server.
+   Append /services to the Service URL (http://SERVER:6543/services). Save.
+
+   Add access rights to your service consumer.
+   
+   Open tab ENDPOINTS. You should see here all endpoints you have described in the description file.
+   Grant your service consumer subsystem access rights for each endpoint.
+
+   Close service form and enable the web service (click on the right of the URL).
    
    To test client against X-road security server, modify client.py to use URL of the security server
    instead of local URL. You need to modify:
@@ -279,6 +293,16 @@ or you can create a brand new project with cookiecutter and use this demo packag
 
       sudo service apache2 restart
 
-   Now you have a local SOAP server running at: http://SERVER/populationdb/services
-   This URL must be configured in your security server.
+   Now you have a local SOAP server running at: http://SERVER/populationdb/services .
 
+   Copy service description file to be served under Apache (assume that web root is /var/www/html):
+
+   .. code-block:: bash          
+
+      sudo mkdir /var/www/html/static
+      sudo cp json_populationdb/static/openapi.yaml  /var/www/html/static/openapi.yaml
+                   
+   Configure your security server like described before, but with service URL http://SERVER/populationdb/services.
+
+   Test services with client.
+   

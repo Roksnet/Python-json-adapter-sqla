@@ -52,6 +52,18 @@ class JsonClient:
         data = {'photo': imgdata}
         return requests.put(url, json=data, **args)
 
+    def list_methods(self):
+        args = self._args()
+        url = f'{self.server_url}/listMethods'
+        print('\nMetadata: list all methods of producer')
+        return requests.get(url, **args)
+
+    def allowed_methods(self):
+        args = self._args()
+        url = f'{self.server_url}/allowedMethods'
+        print('\nMetadata: list allowed methods of producer')
+        return requests.get(url, **args)
+
 def show_response(response):
     status = response.status_code
     print(f'Response status: {status}')
@@ -67,15 +79,17 @@ def show_response(response):
 
 def run_client():
     # security server URL
-    security_server = 'http://1.2.3.4' # REPLACE WITH YOUR DATA
+    security_server = 'http://1.2.3.4' # REPLACE WITH INNER IP OF YOUR SECURITY SERVER
     json_protocol = 'r1'
-    serviceid = 'roksnet-dev/COM/12998179/roksnet-producer' # REPLACE WITH YOUR DATA
-
+    providerid = 'roksnet-dev/COM/12998179/populationdb' # REPLACE WITH ID OF YOUR PROVIDER
+    service_code = 'persondata' # REPLACE WITH SERVICE CODE OF YOUR SERVICE
+    
     # normal URL (security server)
-    url = f'{security_server}/{json_protocol}/{serviceid}'
+    url_provider = f'{security_server}/{json_protocol}/{providerid}'
+    url_service = f'{url_provider}/{service_code}'
 
     # local URL (without using security server, for testing only)
-    url = 'http://localhost:6543/services'
+    url_provider = url_service = 'http://localhost:6543/services'
     
     # X-Road-Client header value as xRoadInstance/memberClass/memberCode/subsystemCode    
     xroad_client = 'roksnet-dev/COM/12998179/roksnet-consumer'
@@ -83,36 +97,50 @@ def run_client():
     # X-Road-Userid header value as country code + person code
     userid = 'EE30101010007' # REPLACE WITH AUTHENTICATED USER ID
 
+    # Provider metadata client
+    reg = JsonClient(xroad_client, url_provider, userid=userid)
+
+    if True:
+        # Example: query list of all methods of the provider
+        show_response(reg.list_methods())
+
+    if True:
+        # Example: query list of methods that your subsystem is allowed to consume
+        show_response(reg.allowed_methods())
+
     # Service client
-    reg = JsonClient(xroad_client, url, userid=userid)
+    reg = JsonClient(xroad_client, url_service, userid=userid)
 
-    # Get list of persons
-    response = reg.list_persons(surname='H%')
-    data = show_response(response)
-    try:
-        # get first person's code
-        person = data['items'][0]
-        code = person['personcode']
-    except:
-        print('Persons list query did not succeed')
-        return
+    if True:
+        # Get list of persons
+        response = reg.list_persons(surname='H%')
+        data = show_response(response)
+        try:
+            # get first person's code
+            person = data['items'][0]
+            code = person['personcode']
+        except:
+            print('Persons list query did not succeed')
+            return
 
-    # Get data of a person
-    response = reg.get_person(code)
-    data = show_response(response)
-    imgdata = data.get('photo')
-    if imgdata:
-        img = base64.b64decode(imgdata)
-        with open('tmp.jpg', 'wb') as f:
-            f.write(img)
+    if True:
+        # Get data of a person
+        response = reg.get_person(code)
+        data = show_response(response)
+        imgdata = data.get('photo')
+        if imgdata:
+            img = base64.b64decode(imgdata)
+            with open('tmp.jpg', 'wb') as f:
+                f.write(img)
 
-    # Replace photo of the person
-    fn = 'json_populationdb/scripts/init_photo2.jpg'
-    with open(fn, 'rb') as f:
-        img = f.read()
-        response = reg.put_photo(code, img)
-        show_response(response)
-    
+    if True:
+        # Replace photo of the person
+        fn = 'json_populationdb/scripts/init_photo2.jpg'
+        with open(fn, 'rb') as f:
+            img = f.read()
+            response = reg.put_photo(code, img)
+            show_response(response)
+            
 if __name__ == '__main__':
     run_client()
 

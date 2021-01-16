@@ -30,6 +30,7 @@ def put_photo(request):
                 else:
                     img = base64.b64decode(imgdata)
                     p.photo = img
+                    request.dbsession.commit()
                     res = {'message': 'Photo updated successfully'}
                     return res
     except Exception as ex:
