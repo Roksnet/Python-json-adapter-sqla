@@ -111,12 +111,14 @@ or you can create a brand new project with cookiecutter and use this demo packag
    Route names must be mapped to route URLs in routes.py.
 
 #. Create service description file (OpenAPI Specification).
-   Example service description file is static/openapi.yaml.
-   Technically, the service description file is not required for running the server,
-   but it is useful for programmers (and code generators)
+   Example service description file is static/persondata.yaml.
+   The service description file is useful for programmers (and code generators)
    who will develop clients that are using your services
    and need to know the structure of service input and output messages.
-   
+   In terms of the security server, each service must have its own description file,
+   but a service may include several endpoints.
+   For each endpoint, description file contains a path description.
+
 #. Write client code. The demo project contains demo client code in client.py.
    To develop client of a service of some other service provider, you need to know
    the input and output parameters of the service.
@@ -164,7 +166,7 @@ or you can create a brand new project with cookiecutter and use this demo packag
 
    .. code-block:: bash
 
-      http://SERVER:6543/static/openapi.yaml
+      http://SERVER:6543/static/persondata.yaml
       
    For running client, open another terminal window,  activate the sandbox environment:
 
@@ -186,7 +188,7 @@ or you can create a brand new project with cookiecutter and use this demo packag
    Modal window appears, insert following values:
 
    * URL Type: OpenAPI 3 Description
-   * URL: http://SERVER:6543/static/openapi.yaml
+   * URL: http://SERVER:6543/static/persondata.yaml
    * Service Code: persondata
 
    Save and you see the URL. Click on the service code. You see Service URL field filled with root URI of your server.
@@ -299,7 +301,7 @@ or you can create a brand new project with cookiecutter and use this demo packag
    .. code-block:: bash          
 
       sudo mkdir /var/www/html/static
-      sudo cp json_populationdb/static/openapi.yaml  /var/www/html/static/openapi.yaml
+      sudo cp json_populationdb/static/persondata.yaml  /var/www/html/static/persondata.yaml
                    
    Configure your security server like described before, but with service URL http://SERVER/populationdb/services.
 
