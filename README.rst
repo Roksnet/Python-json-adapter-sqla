@@ -194,9 +194,9 @@ or you can create a brand new project with cookiecutter and use this demo packag
    Save and you see the URL. Click on the service code. You see Service URL field filled with root URI of your server.
    Append /services to the Service URL (http://SERVER:6543/services). Save.
 
-   Add access rights to your service consumer.
-   
    Open tab ENDPOINTS. You should see here all endpoints you have described in the description file.
+   Add access rights to your service consumer. Access rights may be granted either for service
+   (tab SERVICE PARAMETERS) or individually for each endpoint (tab ENDPOINTS). 
 
    Close service form and enable the web service (click on the right of the URL).
    
