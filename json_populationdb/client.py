@@ -63,6 +63,14 @@ class JsonClient:
         url = f'{self.server_url}/allowedMethods'
         print('\nMetadata: list allowed methods of producer')
         return requests.get(url, **args)
+  
+    def get_openapi(self, service_code):
+        args = self._args()
+        url = f'{self.server_url}/getOpenAPI'
+        params = {'serviceCode': service_code}
+        print('\nMetadata: get service description file')
+        return requests.get(url, params=params, **args)
+        
 
 def show_response(response):
     status = response.status_code
@@ -108,6 +116,12 @@ def run_client():
         # Example: query list of methods that your subsystem is allowed to consume
         show_response(reg.allowed_methods())
 
+    if True:
+        # Example: get service description file (OpenAPI)
+        response = reg.get_openapi(service_code)
+        desc = response.text
+        print(desc[:200] + ' ... ')
+        
     # Service client
     reg = JsonClient(xroad_client, url_service, userid=userid)
 
